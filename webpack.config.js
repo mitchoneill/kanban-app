@@ -2,6 +2,7 @@ var path = require('path');
 var HtmlwebpackPlugin = require('html-webpack-plugin');
 var webpack = require('webpack');
 var merge = require('webpack-merge');
+var stylelint = require('stylelint');
 
 const TARGET = process.env.npm_lifecycle_event;
 const PATHS = {
@@ -12,6 +13,22 @@ const PATHS = {
 var common = {
   entry: PATHS.app,
   module: {
+    preLoaders: [{
+      test: /\.jsx?$/,
+      loaders: ['eslint', 'jscs'],
+      include: PATHS.app
+    },
+      {
+        test: /\.css$/,
+        loaders: ['postcss'],
+        include: PATHS.app
+      },
+      {
+        test: /\.jsx?$/,
+        loaders: ['eslint'],
+        include: PATHS.app
+      }
+    ],
     loaders: [
       {
         test: /\.css$/,
@@ -19,6 +36,13 @@ var common = {
         include: PATHS.app
       }
     ]
+  },
+  postcss: function() {
+    return [stylelint({
+      rules: {
+        'color-hex-case': 2
+      }
+    })]
   },
   plugins: [
     new HtmlwebpackPlugin({
