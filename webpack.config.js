@@ -10,10 +10,16 @@ const PATHS = {
   build: path.join(__dirname, 'build')
 };
 
+process.env.BABEL_ENV = TARGET;
+
 var common = {
   entry: PATHS.app,
+  resolve: {
+    extensions: ['', '.js', '.jsx']
+  },
   module: {
-    preLoaders: [{
+    preLoaders: [
+      {
       test: /\.jsx?$/,
       loaders: ['eslint', 'jscs'],
       include: PATHS.app
@@ -22,14 +28,14 @@ var common = {
         test: /\.css$/,
         loaders: ['postcss'],
         include: PATHS.app
-      },
-      {
-        test: /\.jsx?$/,
-        loaders: ['eslint'],
-        include: PATHS.app
       }
     ],
     loaders: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['babel'],
+        include: PATHS.app
+      },
       {
         test: /\.css$/,
         loaders: ['style', 'css'],
@@ -40,7 +46,7 @@ var common = {
   postcss: function() {
     return [stylelint({
       rules: {
-        'color-hex-case': 2
+        'color-hex-case': 'lower'
       }
     })]
   },
