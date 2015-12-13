@@ -1,6 +1,7 @@
 import uuid from 'node-uuid';
 import alt from '../libs/alt';
 import LaneActions from '../actions/LaneActions';
+import NoteStore from './NoteStore';
 
 class LaneStore {
   constructor() {
@@ -17,6 +18,43 @@ class LaneStore {
     this.setState({
       lanes: lanes.concat(lane)
     });
+  }
+  attachToLane({laneId, noteId}) {
+    if (!noteId) {
+      this.waitFor(NoteStore);
+
+      noteId = NoteStore.getState().notes.slice(-1)[0].id;
+    }
+
+    const lanes = this.lanes.map((lane) => {
+      if (lane.id === laneId) {
+        if (lane.notes.indexOf(noteId) === -1) {
+          lane.notes.push(noteId);
+        } else {
+          console.warn('Already attached ote to lane', lanes);
+        }
+      }
+      return lane;
+    });
+
+    this.setState({lanes});
+  }
+  detechFromLane({laneId, noteId}) {
+    const lanes = this.lanes.map((lane) => {
+      if (lane.id === laneId) {
+        const notes = lane.notes;
+        const removeIndex = notes.indexOf(noteId);
+        if (removeIndex !== -1) {
+          lane.notes = notes.filter((note) => note.id !== noteId);
+        } else {
+          console.warn('Failed to remove note from a lane as it didn\'t exist', lanes);
+        }
+      }
+
+      return lane;
+    });
+
+    this.setState({lanes});
   }
 }
 
