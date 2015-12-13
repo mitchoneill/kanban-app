@@ -4,8 +4,6 @@ import Editable from './Editable.jsx';
 export default class Notes extends React.Component {
   render() {
     const notes = this.props.items;
-    console.log(this.props);
-    console.log(notes);
 
     return <ul className="notes">{notes.map(this.renderNote, this)}</ul>;
   }
