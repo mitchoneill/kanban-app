@@ -2,8 +2,9 @@ import uuid from 'node-uuid';
 import alt from '../libs/alt';
 import LaneActions from '../actions/LaneActions';
 import NoteStore from './NoteStore';
+import update from 'react-addons-update';
 
-class LaneStore {
+export default class LaneStore {
   constructor() {
     this.bindActions(LaneActions);
 
@@ -40,6 +41,8 @@ class LaneStore {
       noteId = NoteStore.getState().notes.slice(-1)[0].id;
     }
 
+    this.removeNote(noteId);
+
     const lanes = this.lanes.map((lane) => {
       if (lane.id === laneId) {
         if (lane.notes.indexOf(noteId) === -1) {
@@ -52,6 +55,19 @@ class LaneStore {
     });
 
     this.setState({lanes});
+  }
+  removeNote(noteId) {
+    const lanes = this.lanes;
+    const removeLane = lanes.filter((lane) => {
+      return lane.notes.indexOf(noteId) >= 0;
+    })[0];
+    if (!removeLane) {
+      return;
+    }
+    const removeNoteIndex = removeLane.notes.indexOf(noteId);
+
+    removeLane.notes = removeLane.notes.slice(0, removeNoteIndex).
+      concat(removeLane.notes.slice(removeNoteIndex + 1));
   }
   detachFromLane({laneId, noteId}) {
     const lanes = this.lanes.map((lane) => {
@@ -67,6 +83,34 @@ class LaneStore {
 
       return lane;
     });
+
+    this.setState({lanes});
+  }
+  move({sourceId, targetId}) {
+    const lanes = this.lanes;
+    const sourceLane = lanes.filter((lane) => {
+      return lane.notes.indexOf(sourceId) >= 0;
+    })[0];
+    const targetLane = lanes.filter((lane) => {
+      return lane.notes.indexOf(targetId) >= 0;
+    })[0];
+    const sourceNoteIndex = sourceLane.notes.indexOf(sourceId);
+    const targetNoteIndex = targetLane.notes.indexOf(targetId);
+
+    if (sourceLane === targetLane) {
+      sourceLane.notes = update(sourceLane.notes, {
+        $splice: [
+          [sourceNoteIndex, 1],
+          [targetNoteIndex, 0, sourceId]
+        ]
+      });
+    } else {
+      // get rid of the source
+      sourceLane.notes.splice(sourceNoteIndex, 1);
+
+      // and move it to target
+      targetLane.notes.splice(targetNoteIndex, 0, sourceId);
+    }
 
     this.setState({lanes});
   }
