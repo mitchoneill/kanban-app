@@ -1,6 +1,6 @@
 import AltContainer from 'alt-container';
 import React from 'react';
-import Lanes from './Lanes.jsx';
+import Lanes from './Lanes';
 import LaneActions from '../actions/LaneActions';
 import LaneStore from '../stores/LaneStore';
 import {DragDropContext} from 'react-dnd';
