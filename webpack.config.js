@@ -4,6 +4,7 @@ var webpack = require('webpack');
 var merge = require('webpack-merge');
 var stylelint = require('stylelint');
 var Clean = require('clean-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Load *package.json* so we can use `dependencies` from there
 var pkg = require('./package.json');
@@ -39,11 +40,6 @@ var common = {
         test: /\.jsx?$/,
         loaders: ['babel'],
         include: PATHS.app
-      },
-      {
-        test: /\.css$/,
-        loaders: ['style', 'css'],
-        include: PATHS.app
       }
     ]
   },
@@ -78,6 +74,15 @@ if(TARGET === 'start' || !TARGET) {
       host: process.env.HOST,
       port: process.env.PORT
     },
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loaders: ['style', 'css'],
+          include: PATHS.app
+        }
+      ]
+    },
     plugins: [
       new webpack.HotModuleReplacementPlugin()
     ]
@@ -98,9 +103,19 @@ if(TARGET === 'build') {
       chunkFilename: '[chunkhash].js'
     },
     devtool: 'source-map',
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract('style', 'css'),
+          include: PATHS.app
+        }
+      ]
+    },
     plugins: [
       new Clean([PATHS.build]),
       // Extract vendor and manifest files
+      new ExtractTextPlugin('styles.[chunkhash].css'),
       new webpack.optimize.CommonsChunkPlugin({
         names: ['vendor', 'manifest']
       }),

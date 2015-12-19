@@ -29,6 +29,7 @@
     "eslint-loader": "^1.1.1",
     "eslint-plugin-react": "^3.11.3",
     "execall": "^1.0.0",
+    "extract-text-webpack-plugin": "^0.9.1",
     "get-stdin": "^5.0.1",
     "globby": "^4.0.0",
     "html-webpack-plugin": "^1.6.0",
