@@ -4,6 +4,9 @@ var webpack = require('webpack');
 var merge = require('webpack-merge');
 var stylelint = require('stylelint');
 
+// Load *package.json* so we can use `dependencies` from there
+var pkg = require('./package.json');
+
 const TARGET = process.env.npm_lifecycle_event;
 const PATHS = {
   app: path.join(__dirname, 'app'),
@@ -81,9 +84,16 @@ if(TARGET === 'start' || !TARGET) {
 }
 if(TARGET === 'build') {
   module.exports = merge(common, {
+    // Define entry points needed for splitting
+    entry: {
+      app: PATHS.app,
+      vendor: Object.keys(pkg.dependencies).filter(function(v) {
+        return v !== 'alt-utils';
+      })
+    },
     output: {
       path: PATHS.build,
-      filename: 'bundle.js'
+      filename: '[name].js'
     },
     devtool: 'source-map',
     plugins: [
