@@ -3,6 +3,7 @@ var HtmlwebpackPlugin = require('html-webpack-plugin');
 var webpack = require('webpack');
 var merge = require('webpack-merge');
 var stylelint = require('stylelint');
+var Clean = require('clean-webpack-plugin');
 
 // Load *package.json* so we can use `dependencies` from there
 var pkg = require('./package.json');
@@ -98,6 +99,7 @@ if(TARGET === 'build') {
     },
     devtool: 'source-map',
     plugins: [
+      new Clean([PATHS.build]),
       // Extract vendor and manifest files
       new webpack.optimize.CommonsChunkPlugin({
         names: ['vendor', 'manifest']
