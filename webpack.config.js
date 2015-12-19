@@ -93,7 +93,8 @@ if(TARGET === 'build') {
     },
     output: {
       path: PATHS.build,
-      filename: '[name].js'
+      filename: '[name].[chunkhash].js',
+      chunkFilename: '[chunkhash].js'
     },
     devtool: 'source-map',
     plugins: [
